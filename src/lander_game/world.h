@@ -16,10 +16,17 @@ class World {
     void
     update(sf::RenderWindow & window);
 
+    void
+    generate_landscape();
+
+    arma::mat
+    get_lz();
+
 
     sf::Texture lander_texture;
 
-    arma::vec landscape;
+    int n_points = 50;
+    arma::mat landscape;
     Rocket rocket;
     sf::Clock clock;
     float current_time;
