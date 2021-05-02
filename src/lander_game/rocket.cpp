@@ -17,10 +17,8 @@ true_forward(
 }
 
 Rocket::Rocket() {
-
-  this->setOrigin(100., 100.);
+  this->setOrigin(75., 75.);
   this->setPosition(900., 100);
-
 }
 
 void

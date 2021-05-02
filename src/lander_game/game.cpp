@@ -12,7 +12,7 @@ lander_game(){
   window.setVerticalSyncEnabled(true);
   window.setFramerateLimit(60);
 
-  World world;
+  auto world = World();
 
   while (window.isOpen()) {
     window.clear(sf::Color(255, 255, 255, 255));
@@ -25,7 +25,13 @@ lander_game(){
       }
     }
 
+    if( sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
+      world.reinitialize();
+      continue;
+    }
+
     world.update(window);
+    world.print_info(window);
     window.display();
   }
 
