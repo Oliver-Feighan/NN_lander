@@ -8,6 +8,7 @@ void
 World::generate_landscape(){
 
   this->landscape = arma::zeros(2, 2 * this->n_points);
+  this->slopes = arma::zeros(this->n_points-1);
 
   for(int i = 0; i < this->landscape.n_cols; i+=2){
     int top = i;
@@ -22,8 +23,18 @@ World::generate_landscape(){
     this->landscape.col(top).row(1) = y_pos - 50;
     this->landscape.col(bottom).row(1) = 1800;
 
-  }
+    if (i > 0 && i < 52){
+      const arma::vec left = this->landscape.col(i-2);
+      const arma::vec right = this->landscape.col(i);
 
+      const auto dx = right(0) - left(0);
+      const auto dy = right(1) - left(1);
+      const auto hyp = std::pow(std::pow(dx, 2) + std::pow(dy, 2), 0.5);
+
+      this->slopes(i-2) = std::asin(dy/hyp) * 180/arma::datum::pi;
+
+    }
+  }
 }
 
 sf::VertexArray
@@ -41,14 +52,14 @@ to_vertices(
   return vertices;
 }
 
-arma::mat
-World::get_lz(){
+std::pair<arma::mat, float>
+World::get_lz_and_slope(){
 
   const auto x_pos = this->rocket.getPosition().x;
 
   const auto index = 2*floor(n_points/2 * x_pos/1800);
 
-  return this->landscape.cols(index, index+3);
+  return {this->landscape.cols(index, index+3), this->slopes(index)};
 
 }
 
@@ -77,7 +88,7 @@ World::get_lowest_point(){
 void
 World::check_landed(){
 
-  const auto lz = this->get_lz();
+  const auto [lz, slope] = this->get_lz_and_slope();
   const auto lowest_point = this->get_lowest_point();
 
   const arma::vec first = lz.col(0);
@@ -130,17 +141,30 @@ World::print_info(
     return result;
   };
 
-  auto altitude = make_text("altitude", std::to_string(this->distance_to_ground));
+  const auto [lz, slope_val] = this->get_lz_and_slope();
+
+  auto altitude   = make_text("altitude", std::to_string(this->distance_to_ground));
   auto x_velocity = make_text("x m/s", std::to_string(this->rocket.velocity.x));
   auto y_velocity = make_text("y m/s", std::to_string(this->rocket.velocity.y));
+  auto slope      = make_text("slope", std::to_string(slope_val));
+
+  const auto tilt_val = this->rocket.getRotation() < 180
+                            ? this->rocket.getRotation()
+                            : -(360 - this->rocket.getRotation());
+
+  auto tilt       = make_text("tilt", std::to_string(tilt_val));
 
   altitude.setPosition((sf::Vector2f{10., 0.}));
   x_velocity.setPosition(sf::Vector2f{10., 35.});
   y_velocity.setPosition(sf::Vector2f{10., 70.});
+  slope.setPosition(sf::Vector2f{10., 105.});
+  tilt.setPosition(sf::Vector2f{10., 140.});
 
   window.draw(altitude);
   window.draw(x_velocity);
   window.draw(y_velocity);
+  window.draw(slope);
+  window.draw(tilt);
 
 
 }
@@ -155,7 +179,8 @@ World::update(
 
   const auto pos = this->rocket.getPosition();
 
-  const auto lz = to_vertices(this->get_lz(), sf::Color::Red);
+  const auto [lz_mat, slope] = this->get_lz_and_slope();
+  const auto lz = to_vertices(lz_mat, sf::Color::Red);
   this->check_landed();
 
   if(!this->landed){

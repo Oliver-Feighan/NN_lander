@@ -13,6 +13,7 @@ lander_game(){
   window.setFramerateLimit(60);
 
   auto world = World();
+  bool paused = false;
 
   while (window.isOpen()) {
     window.clear(sf::Color(255, 255, 255, 255));

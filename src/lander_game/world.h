@@ -31,12 +31,13 @@ class World {
     sf::Vector2f
     get_lowest_point();
 
-    arma::mat
-    get_lz();
+    std::pair<arma::mat, float>
+    get_lz_and_slope();
 
     sf::Texture lander_texture;
     int n_points;
     arma::mat landscape;
+    arma::vec slopes;
     Rocket rocket;
     sf::Clock clock;
     float current_time;
