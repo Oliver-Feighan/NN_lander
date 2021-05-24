@@ -21,4 +21,5 @@ add_executable(NN_lander
 target_link_libraries(NN_lander PRIVATE sfml-window)
 target_link_libraries(NN_lander PRIVATE sfml-graphics)
 target_link_libraries(NN_lander PRIVATE sfml-system)
+target_link_libraries(NN_lander PRIVATE sfml-audio)
 target_link_libraries(NN_lander PRIVATE ${ARMADILLO_LIBRARIES})

@@ -2,6 +2,7 @@
 #define ROCKET_GAME_ROCKET_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class Rocket: public sf::Sprite{
 
@@ -11,12 +12,13 @@ public:
   sf::Vector2f forward = {0., -1.0};
   sf::Vector2f acceleration = {0., 0.};
   sf::Vector2f velocity = {0., 0};
+  float rotation = 0.;
 
-  void
-  accelerate();
+  bool
+  accelerate(sf::Sound &engine_sound);
 
-  void
-  turn();
+  bool
+  turn(float dt);
 
   void
   update_position(float dt);

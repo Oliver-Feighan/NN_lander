@@ -17,7 +17,8 @@ class World {
     reinitialize();
 
     void
-    update(sf::RenderWindow & window);
+    update(sf::RenderWindow & window,
+           sf::Sound &engine_sound);
 
     void
     print_info(sf::RenderWindow & window);
@@ -35,14 +36,33 @@ class World {
     get_lz_and_slope();
 
     sf::Texture lander_texture;
+
     int n_points;
     arma::mat landscape;
     arma::vec slopes;
+    arma::mat best_lz;
+
+    sf::Vector2f best_lz_pos;
+
     Rocket rocket;
+    bool landed;
+    float safe_speed = 50;
+    float safe_tilt = 10;
+    bool under_safe_speed;
+    bool under_safe_tilt;
+    bool over_lz;
+
+    float distance_to_ground;
+
     sf::Clock clock;
     float current_time;
-    bool landed;
-    float distance_to_ground;
+
+    float time_since_last_thrust = 0.;
+    float time_since_last_turn = 0.;
+
+    std::string log = "";
+    bool written = false;
+
 
 };
 

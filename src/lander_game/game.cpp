@@ -1,6 +1,5 @@
 #include "game.h"
 #include <SFML/Graphics.hpp>
-
 #include "world.h"
 
 namespace game {
@@ -14,6 +13,12 @@ lander_game(){
 
   auto world = World();
   bool paused = false;
+
+  sf::SoundBuffer engine_sound_buffer;
+  engine_sound_buffer.loadFromFile("sounds/engine.wav");
+
+  sf::Sound engine_sound;
+  engine_sound.setBuffer(engine_sound_buffer);
 
   while (window.isOpen()) {
     window.clear(sf::Color(255, 255, 255, 255));
@@ -31,7 +36,7 @@ lander_game(){
       continue;
     }
 
-    world.update(window);
+    world.update(window, engine_sound);
     world.print_info(window);
     window.display();
   }

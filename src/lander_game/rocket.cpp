@@ -21,25 +21,45 @@ Rocket::Rocket() {
   this->setPosition(900., 100);
 }
 
-void
-Rocket::accelerate() {
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        const auto angle = this->getRotation() * arma::datum::pi / 180;
-        this->acceleration += this->thrust * true_forward(this->forward, angle);
-      } else{
-        this->acceleration = {0., 10.};
-      }
+bool
+Rocket::accelerate(sf::Sound &engine_sound) {
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    const auto angle = this->getRotation() * arma::datum::pi / 180;
+    this->acceleration += this->thrust * true_forward(this->forward, angle);
+
+    if (engine_sound.getStatus() != sf::SoundSource::Playing) {
+      //engine_sound.play();
+    }
+
+    return true;
+  } else {
+    this->acceleration = {0., 10.};
+
+    if (engine_sound.getStatus() == sf::SoundSource::Playing) {
+      //engine_sound.pause();
+    }
+
+    return false;
+  }
 }
 
-void
-Rocket::turn() {
+bool
+Rocket::turn(const float dt) {
+  bool turned = false;
+
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-    this->rotate(-5.);
+    this->rotation += -2.;
+    turned = true;
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    this->rotate(5.);
+    this->rotation += 2.;
+    turned = true;
   }
+
+  this->rotate(this->rotation * dt);
+
+  return turned;
 }
 
 void
